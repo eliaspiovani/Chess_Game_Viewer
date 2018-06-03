@@ -14,7 +14,6 @@
 #endif
 
 #include "imgui.h"
-#include "imgui.cpp"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
 
