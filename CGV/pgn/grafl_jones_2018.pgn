@@ -1,0 +1,38 @@
+[Event "4NCL 2017/18"]
+[Site "England ENG"]
+[Date "2018.05.05"]
+[EventDate "2017.11.11"]
+[Round "9.13"]
+[Result "0-1"]
+[White "Florian Grafl"]
+[Black "Gawain Jones"]
+[ECO "A01"]
+[WhiteElo "2369"]
+[BlackElo "2667"]
+[PlyCount "242"]
+
+1. b3 e5 2. Bb2 Nc6 3. Nf3 e4 4. Nd4 Nxd4 5. Bxd4 d5 6. e3 Ne7
+7. d3 Nf5 8. Bb2 Bb4+ 9. c3 Bd6 10. dxe4 dxe4 11. Qc2 O-O
+12. Nd2 Nxe3 13. fxe3 Qh4+ 14. Kd1 Bf5 15. g3 Bxg3 16. Bg2 Bf2
+17. Bxe4 Bg4+ 18. Kc1 Bxe3 19. Kb1 Bxd2 20. Qxd2 Rfe8 21. Bc2
+Re2 22. Qd3 Qh5 23. Rd1 Rae8 24. Rd2 Rxh2 25. Rxh2 Qxh2 26. a4
+Qh3 27. Ka2 Qxd3 28. Bxd3 Re3 29. Bc4 h5 30. Rg1 g6 31. Bc1
+Rxc3 32. Re1 Be6 33. Bb2 Rf3 34. Bxe6 fxe6 35. Rxe6 Kf7
+36. Re4 g5 37. Re5 Kg6 38. Re6+ Kf5 39. Re7 h4 40. Rxc7 h3
+41. Rxb7 h2 42. Rh7 Rf2 43. Rf7+ Ke4 44. Rxf2 h1=Q 45. Rf7 Qg1
+46. Re7+ Kf5 47. Rf7+ Ke6 48. Rf6+ Kd5 49. Rf5+ Ke4 50. Re5+
+Kf4 51. Rb5 g4 52. Rb4+ Kf3 53. Bd4 Qh2+ 54. Ka3 Qd6 55. Bxa7
+g3 56. a5 Qe5 57. Bd4 Qxa5+ 58. Ra4 Qd2 59. Rc4 Ke2 60. Bc5 g2
+61. Re4+ Kf1 62. Rc4 g1=Q 63. Bxg1 Kxg1 64. Rc6 Kf2 65. Rf6+
+Ke2 66. Re6+ Kf3 67. Rc6 Ke4 68. Rc4+ Kd3 69. Rc6 Qg2 70. Rc4
+Qh2 71. Rc1 Kd4 72. Rc4+ Kd5 73. Rc1 Kd6 74. Rc4 Qf2 75. Rc1
+Kd7 76. Rc4 Qd2 77. Rc5 Qd6 78. b4 Qd1 79. Kb2 Qe1 80. Kb3 Kd6
+81. Kc4 Qb1 82. Kc3 Kd7 83. Rc4 Qa2 84. Rc5 Qa3+ 85. Kc4 Qb2
+86. Rd5+ Ke6 87. Rc5 Qc2+ 88. Kb5 Qa2 89. Rc3 Kd6 90. Rc5 Qb3
+91. Ka5 Qa3+ 92. Kb5 Qa2 93. Rc1 Ke5 94. Rc3 Kd4 95. Rc5 Qa7
+96. Rc1 Kd3 97. Rc5 Kd2 98. Rc4 Qb8+ 99. Ka5 Qd8+ 100. Kb5 Qd3
+101. Kc5 Qe3+ 102. Kc6 Qe2 103. Rc5 Qa6+ 104. Kc7 Kd3 105. b5
+Qa7+ 106. Kc6 Kd4 107. Rc1 Qa3 108. Rc2 Qb3 109. Rc1 Qe3
+110. Rd1+ Kc4 111. b6 Qe6+ 112. Kc7 Qe7+ 113. Kb8 Qf8+
+114. Ka7 Qa3+ 115. Kb8 Kb5 116. b7 Kb6 117. Rb1+ Kc6 118. Rh1
+Qf8+ 119. Ka7 Qc5+ 120. Kb8 Qe5+ 121. Ka7 Qa5+ 0-1

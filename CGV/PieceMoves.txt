@@ -1,0 +1,26 @@
+The pieces movements 
+
+- Chess uses six pieces
+- No piece is allowed to land on a square occupied by a friendly piece.
+- If a piece lands on a square occupied by an enemy piece, that enemy is captured and removed from the board.
+- With the exception of the knight, pieces are not allowed to jump over other pieces.
+
+The Rook
+- It moves in a straight line horizontally or vertically for any number of squares.
+The Bishop
+- moves in a straight line diagonally for any number of squares.
+The Queen
+- can move any number of squares in a straight line horizontally, vertically or diagonally.
+The King
+- can also move in any direction, including diagonally, but it can only move one square at a time. 
+The Knight
+- moves in an irregular, L-shaped pattern. the knight can leap over other pieces.
+Pawns
+- pawns can only move forward, not backward. A pawn can only move directly forward one square at a time unless it is the pawn's first move, it can move one or two squares directly forward. Pawns can only capture a piece by moving one square forward diagonally.
+
+Castling - O-O Rook in big number - O-O-O Rook in small number
+Move the king two squares toward the rook.
+Hop the rook over the king so it lands on the square next to the king. 
+
+Pawn Promotion - h1=Q
+Should a pawn manage to make it all the way to the other end of the board, that pawn must be promoted to any piece its player chooses, other than a king.
