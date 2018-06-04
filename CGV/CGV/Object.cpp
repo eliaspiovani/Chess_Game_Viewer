@@ -85,6 +85,7 @@ void ProjMatrix::setLightID(GLuint &lightID)
 
 void BoardMatrix::init(Object WhitePieces[16], Object BlackPieces[16])
 {
+    
     // Init matrix with Null values
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -132,129 +133,14 @@ bool BoardMatrix::move(const char pieceStart[2], const char pieceEnd[2])
     
     movingPiece = true;
     
-    //    char startColumn = pieceStart[0];
-    //    char startRow = pieceStart[1];
-    //    char endColumn = pieceEnd[0];
-    //    char endRow = pieceEnd[1];
-    
     initPosZ = pieceStart[0] - 97;
     initPosX = pieceStart[1] - 49;
     finalPosZ = pieceEnd[0] - 97;
     finalPosX = pieceEnd[1] - 49;
     
-    //    switch (startColumn) {
-    //        case 'a':
-    //            initPosZ = 0;
-    //            break;
-    //        case 'b':
-    //            initPosZ = 1;
-    //            break;
-    //        case 'c':
-    //            initPosZ = 2;
-    //            break;
-    //        case 'd':
-    //            initPosZ = 3;
-    //            break;
-    //        case 'e':
-    //            initPosZ = 4;
-    //            break;
-    //        case 'f':
-    //            initPosZ = 5;
-    //            break;
-    //        case 'g':
-    //            initPosZ = 6;
-    //            break;
-    //        case 'h':
-    //            initPosZ = 7;
-    //            break;
-    //    }
-    
-    //    switch (startRow) {
-    //        case '1':
-    //            initPosX = 0;
-    //            break;
-    //        case '2':
-    //            initPosX = 1;
-    //            break;
-    //        case '3':
-    //            initPosX = 2;
-    //            break;
-    //        case '4':
-    //            initPosX = 3;
-    //            break;
-    //        case '5':
-    //            initPosX = 4;
-    //            break;
-    //        case '6':
-    //            initPosX = 5;
-    //            break;
-    //        case '7':
-    //            initPosX = 6;
-    //            break;
-    //        case '8':
-    //            initPosX = 7;
-    //            break;
-    //
-    //    }
-    
-    //    switch (endColumn) {
-    //        case 'a':
-    //            finalPosZ = 0;
-    //            break;
-    //        case 'b':
-    //            finalPosZ = 1;
-    //            break;
-    //        case 'c':
-    //            finalPosZ = 2;
-    //            break;
-    //        case 'd':
-    //            finalPosZ = 3;
-    //            break;
-    //        case 'e':
-    //            finalPosZ = 4;
-    //            break;
-    //        case 'f':
-    //            finalPosZ = 5;
-    //            break;
-    //        case 'g':
-    //            finalPosZ = 6;
-    //            break;
-    //        case 'h':
-    //            finalPosZ = 7;
-    //            break;
-    //    }
-    
-    //    switch (endRow) {
-    //        case '1':
-    //            finalPosX = 0;
-    //            break;
-    //        case '2':
-    //            finalPosX = 1;
-    //            break;
-    //        case '3':
-    //            finalPosX = 2;
-    //            break;
-    //        case '4':
-    //            finalPosX = 3;
-    //            break;
-    //        case '5':
-    //            finalPosX = 4;
-    //            break;
-    //        case '6':
-    //            finalPosX = 5;
-    //            break;
-    //        case '7':
-    //            finalPosX = 6;
-    //            break;
-    //        case '8':
-    //            finalPosX = 7;
-    //            break;
-    //    }
-    
     //        float step = 0.15f;
-    float speed = 20.0f;
-    float stepX = float(finalPosX - initPosX)/speed;
-    float stepZ = float(finalPosZ - initPosZ)/speed;
+    float stepX = float(finalPosX - initPosX)/nSteps;
+    float stepZ = float(finalPosZ - initPosZ)/nSteps;
     
     //implementation - verify if contains s piece on pieceStart!
     if (Matrix[initPosX][initPosZ] == NULL) {
@@ -290,9 +176,9 @@ bool BoardMatrix::move(const char pieceStart[2], const char pieceEnd[2])
             }
             else
             {
-                Matrix[finalPosX][finalPosZ]->pos.x = 16.0f + nWPiecesDead;
+                Matrix[finalPosX][finalPosZ]->pos.x = 16.0f - nWPiecesDead;
                 Matrix[finalPosX][finalPosZ]->pos.z = -4.0f;
-                nBPiecesDead++;
+                nWPiecesDead++;
             }
             
         }
@@ -339,6 +225,7 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
     switch (piece)
     {
         case 'R':
+            
             // Calculate all Rook movements
             for (int R = 1; R < 8 && !first_found; R++) {
                 for (int theta = 0; theta < 360; theta += 90) {
@@ -362,6 +249,7 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             }
             break;
         case 'K':
+            
             // Calculate all King movements
             for (int theta = 0; theta < 360; theta += 45) {
                 signed int x = (sin(theta * PI / 180.0)) >= 0 ? (int)(sin(theta * PI / 180.0) + 0.5) : (int)(sin(theta * PI / 180.0) - 0.5);
@@ -381,6 +269,7 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             }
             break;
         case 'Q':
+            
             // Calculate all Queen movements
             for (int R = 1; R < 8 && !first_found; R++) {
                 for (int theta = 0; theta < 360; theta += 45) {
@@ -403,6 +292,7 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             }
             break;
         case 'B':
+            
             // Calculate all Bishop movements
             for (int R = 1; R < 8 && !first_found; R++) { // R = 1.414
                 for (int theta = 45; theta < 360; theta += 90) {
@@ -460,6 +350,12 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             break;
         case 'O':
             
+            if (color == 'W') {
+                
+            } else {
+                
+            }
+            
             break;
         default:
             std::vector <int> a, b;
@@ -481,24 +377,16 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             if (!isXturn)
             {
                 a = {finalpos[0], finalpos[0]};
-                if (color == 'B') {
-                    b = {finalpos[1] +1, finalpos[1] +2};
-                } else
-                {
-                    b = {finalpos[1] -1, finalpos[1] -2};
-                }
+                if (color == 'B') b = {finalpos[1] +1, finalpos[1] +2};
+                else b = {finalpos[1] -1, finalpos[1] -2};
                 
             } else
             {
 //                a = {finalpos[0] +1, finalpos[0] -1};
                 if (!twoPosib) a = {finalpos[0] +1, finalpos[0] -1};
                 else a = {initialColumn, initialColumn};
-                if (color == 'B') {
-                    b = {finalpos[1] +1, finalpos[1] +1};
-                } else
-                {
-                    b = {finalpos[1] -1, finalpos[1] -1};
-                }
+                if (color == 'B') b = {finalpos[1] +1, finalpos[1] +1};
+                else b = {finalpos[1] -1, finalpos[1] -1};
             }
             
             for (int i = 0; i < 2; i++) {

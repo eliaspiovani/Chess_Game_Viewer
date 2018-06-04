@@ -79,6 +79,7 @@ private:
     bool movingPiece = false;
     int nBPiecesDead = 0, nWPiecesDead = 0;
 public:
+    float nSteps = 8.0f;
 
     void init(Object WhitePieces[16], Object BlackPieces[16]);
 

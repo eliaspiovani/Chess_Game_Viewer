@@ -391,6 +391,7 @@ int main( void )
             ImGui::SetWindowSize(ImVec2 (264, 35));
             if (ImGui::Button("   <<  "))
             {
+                turn = 0;
                 // reset board to the initial positions
                 setInitialPos(WPieces, BPieces);
                 boardMatrix.init(WPieces, BPieces);
