@@ -24,7 +24,7 @@ using namespace glm;
 
 // Include IMGUI
 
-#include "imgui.h"
+#include <imgui/imgui.h>
 #include "imgui_impl_glfw_gl3.h"
 
 #include "shader.hpp"
@@ -277,15 +277,13 @@ int main( void )
         
         // when Space is pressed the software loads the next turn and set the flag movingPiece=True indicating a new movement
         // oldState enables the function only when the key is pressed, not while it is pressed
-//        int nextStep = glfwGetKey( window, GLFW_KEY_SPACE );
-//        if (nextStep == GLFW_PRESS && oldState == GLFW_RELEASE && !movingPiece){
-//            movingPiece = true;
-//            //call function to read file and return which piece to move and where to move it
-//            //            movingPiece, pieceToMove, whereToMove = getNextTurn(boardMatrix);
-//            printf("KeyPressed\n");
-//            oldState = GLFW_PRESS;
-//        }
-//        else if (nextStep == GLFW_RELEASE && oldState == GLFW_PRESS) oldState = GLFW_RELEASE;
+        int nextStep = glfwGetKey( window, GLFW_KEY_RIGHT );
+        if (nextStep == GLFW_PRESS && oldState == GLFW_RELEASE && turns.size() > 0 && turn <= turns.size()-1 && !movingPiece){
+            boardMatrix.find_positions(turns, turn, moves);
+            movingPiece = true;
+            oldState = GLFW_PRESS;
+        }
+        else if (nextStep == GLFW_RELEASE && oldState == GLFW_PRESS) oldState = GLFW_RELEASE;
         
         if (movingPiece) {
             // if there is a movement (movingPiece=True) to apply this function is called
