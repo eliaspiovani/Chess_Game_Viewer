@@ -16,6 +16,7 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
+int width = 1024, height = 768;
 
 // Include GLM
 #include <glm/glm.hpp>
@@ -110,8 +111,6 @@ int main( void )
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-    int width = 1024, height = 768;
     
     // Open a window and create its OpenGL context
     window = glfwCreateWindow( width, height, "Chess Game Viewer", NULL, NULL); //1024, 768
@@ -250,6 +249,11 @@ int main( void )
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
+        // update window size
+        glfwGetWindowSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        
+        // prepare frame for ImGui
         ImGui_ImplGlfwGL3_NewFrame();
         
         // Use our shader
@@ -392,7 +396,7 @@ int main( void )
             window_flags |= ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoNav;
             ImGui::Begin("Buttons", 0, window_flags);
-            ImGui::SetWindowPos(ImVec2 (1024/2 - 264/2, 768 - 680/15));
+            ImGui::SetWindowPos(ImVec2 (width/2 - 264/2, height - 680/15));
             ImGui::SetWindowSize(ImVec2 (264, 35));
             if (ImGui::Button("   <<  "))
             {
@@ -427,6 +431,19 @@ int main( void )
             ImGui::Text("Cam.X %.2f, Cam.Y %.2f, Cam.Z %.2f", camPos.x, camPos.y, camPos.z);
             ImGui::Text("Moving piece: %s", movingPiece ? "True":"False");
             ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
+        
+        // End game window
+        if (boardMatrix.eog) {
+            ImGuiWindowFlags window_flags = 0;
+            window_flags |= ImGuiWindowFlags_NoResize;
+            window_flags |=ImGuiWindowFlags_NoTitleBar;
+            ImGui::SetNextWindowBgAlpha(1.0);
+            ImGui::SetNextWindowSize(ImVec2 (130,35));
+            ImGui::SetNextWindowPos(ImVec2 (width/2 - 65, 30));
+            ImGui::Begin("", NULL, window_flags);
+            ImGui::Text("End of the game");
             ImGui::End();
         }
         
