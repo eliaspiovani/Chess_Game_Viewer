@@ -61,7 +61,6 @@
 		2D4D41D1208D252F000A36B0 /* LW.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = LW.bmp; sourceTree = "<group>"; };
 		2D4D41D2208D252F000A36B0 /* CB_King.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CB_King.obj; sourceTree = "<group>"; };
 		2D4D41D5208DE789000A36B0 /* CB_KnightB.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CB_KnightB.obj; sourceTree = "<group>"; };
-		2D4D41D6208E51DC000A36B0 /* Holstein.DDS */ = {isa = PBXFileReference; lastKnownFileType = file; path = Holstein.DDS; sourceTree = "<group>"; };
 		2D6BFF1020AC293300C62E38 /* imgui_impl_glfw_gl3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_impl_glfw_gl3.cpp; sourceTree = "<group>"; };
 		2D6BFF1120AC293300C62E38 /* imgui_impl_glfw_gl3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imgui_impl_glfw_gl3.h; sourceTree = "<group>"; };
 		2D8A307820C5338700A23E00 /* imgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui.cpp; path = include/imgui/imgui.cpp; sourceTree = SOURCE_ROOT; };
@@ -155,7 +154,6 @@
 		2D4D41BD208D24DF000A36B0 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				2D4D41D6208E51DC000A36B0 /* Holstein.DDS */,
 				2D4D41D5208DE789000A36B0 /* CB_KnightB.obj */,
 				2D4D41C9208D252E000A36B0 /* CB_Bishop.obj */,
 				2D4D41D0208D252F000A36B0 /* CB_BParts.obj */,

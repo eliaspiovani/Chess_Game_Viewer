@@ -30,17 +30,17 @@ Object::~Object(){
 void Object::load(const char *path, const char *piecetype, const GLuint &Texture, const GLuint &TextureID)
 {
     pieceType = piecetype;
-    
+
     // implement if obj was loaded well
     bool wParts = loadOBJ(path, v, uvs, n);
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), &v[0], GL_STATIC_DRAW);
-    
+
     glGenBuffers(1, &uvb);
     glBindBuffer(GL_ARRAY_BUFFER, uvb);
     glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-    
+
     glGenBuffers(1, &nb);
     glBindBuffer(GL_ARRAY_BUFFER, nb);
     glBufferData(GL_ARRAY_BUFFER, n.size() * sizeof(glm::vec3), &n[0], GL_STATIC_DRAW);
@@ -48,6 +48,35 @@ void Object::load(const char *path, const char *piecetype, const GLuint &Texture
     texture = &Texture;
     textureID = &TextureID;
 }
+
+void Object::load(const char *path, const char *piecetype)
+{
+    pieceType = piecetype;
+    
+//    glDeleteBuffers(1, &uvb);
+//    glDeleteBuffers(1, &vb);
+//    glDeleteBuffers(1, &nb);
+    
+    v.clear();
+    uvs.clear();
+    n.clear();
+    
+    // implement if obj was loaded well
+    bool wParts = loadOBJ(path, v, uvs, n);
+    glGenBuffers(1, &vb);
+    glBindBuffer(GL_ARRAY_BUFFER, vb);
+    glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), &v[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &uvb);
+    glBindBuffer(GL_ARRAY_BUFFER, uvb);
+    glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &nb);
+    glBindBuffer(GL_ARRAY_BUFFER, nb);
+    glBufferData(GL_ARRAY_BUFFER, n.size() * sizeof(glm::vec3), &n[0], GL_STATIC_DRAW);
+    
+}
+
 
 //void Object::del()
 //{
@@ -59,7 +88,6 @@ void Object::load(const char *path, const char *piecetype, const GLuint &Texture
 void Object::setPos(float x, float y, float z)
 {
     pos = glm::vec3(x, y, z);
-    firstMove = false;
 }
 
 void ProjMatrix::uniform(GLuint &MID, GLuint &VMID, GLuint &MMID)
@@ -85,7 +113,10 @@ void ProjMatrix::setLightID(GLuint &lightID)
 
 void BoardMatrix::init(Object WhitePieces[16], Object BlackPieces[16])
 {
-    
+    // reset values to start new game
+    nBPiecesDead = nWPiecesDead = 0;
+    // end of game is false
+    eog = false;
     // Init matrix with Null values
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -182,8 +213,17 @@ bool BoardMatrix::move(const char pieceStart[2], const char pieceEnd[2])
             }
             
         }
+
+        
         Matrix[finalPosX][finalPosZ] = Matrix[initPosX][initPosZ];
         Matrix[initPosX][initPosZ] = NULL;
+        
+        if (promote && Matrix[finalPosX][finalPosZ]->pieceType[1] == 'P') {
+            printf("Promote pawn");
+            Matrix[finalPosX][finalPosZ]->load("resources/CB_Queen.obj", "BQ");
+            Matrix[finalPosX][finalPosZ]->promoted = true;
+            promote = false;
+        }
         
         movingPiece = false;
     }
@@ -191,48 +231,64 @@ bool BoardMatrix::move(const char pieceStart[2], const char pieceEnd[2])
     return movingPiece;
 }
 
-void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movements &moves)
+void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, movements &moves)
 {
     float PI = 3.1415;
-    
+    moves.doubleMove = false;
     char initPosColumn = '0';
     char initPosRow = '0';
     // 0 - white, 1 - black
     char color = (ply % 2) ? 'B' : 'W';
     // get type of piece
-    char piece = plys[ply][0];
+    char piece = plies[ply][0];
     // search for x in the movement
     //    if (turns[turn].find('x')) turns[turn].erase(1, 1);
     bool isXturn = false;
-    std::size_t found = plys[ply].find("x");
+    std::size_t found = plies[ply].find("x");
     if (found!=std::string::npos)
     {
         isXturn = true;
-        plys[ply].erase(found, 1);
+        plies[ply].erase(found, 1);
     }
     //search for + and delete it
-    found = plys[ply].find("+");
-    if (found!=std::string::npos) plys[ply].erase(found, 1);
+    found = plies[ply].find("+");
+    if (found!=std::string::npos) plies[ply].erase(found, 1);
     // search for = in the movement
-    //TODO
+    found = plies[ply].find("=");
+    if (found!=std::string::npos) {
+        promote = true;
+        promoteTo = plies[ply][3];
+        plies[ply].erase(found, 2);
+    }
     
     //    initPosZ = pieceStart[0] - 97;
     //    initPosX = pieceStart[1] - 49;
     
-    printf("%s %c\n", plys[ply].c_str(), color);
+    printf("%s %c\n", plies[ply].c_str(), color);
     
-    bool first_found = false;
+    bool first_found = false, double_pos = false;
+    int column, row;
+
     switch (piece)
     {
         case 'R':
-            
+            if (plies[ply].size() > 3) {
+                column = plies[ply][2];
+                row = plies[ply][3];
+                double_pos = true;
+            } else
+            {
+                column = plies[ply][1];
+                row = plies[ply][2];
+            }
             // Calculate all Rook movements
-            for (int R = 1; R < 8 && !first_found; R++) {
-                for (int theta = 0; theta < 360; theta += 90) {
+            
+            for (int theta = 0; theta < 360 && !first_found; theta += 90) {
+                for (int R = 1; R < 8; R++) {
                     signed int x = (sin(theta * PI / 180.0)) >= 0 ? (int)(sin(theta * PI / 180.0) + 0.5) : (int)(sin(theta * PI / 180.0) - 0.5);
                     signed int y = (cos(theta * PI / 180.0)) >= 0 ? (int)(cos(theta * PI / 180.0) + 0.5) : (int)(cos(theta * PI / 180.0) - 0.5);
-                    int a = plys[ply][1] + R * x;
-                    int b = plys[ply][2] + R * y;
+                    int a = double_pos ? plies[ply][1] : column + R * x;
+                    int b = row + R * y;
                     if (a >= 'a' && a <= 'h' && b >= '1' && b <= '8') {
                         //                        printf("%c %c\n", a, b);
                         if (Matrix[b - 49][a - 97] != NULL &&
@@ -243,19 +299,23 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
                             initPosColumn = a;
                             initPosRow = b;
                             first_found = true;
+                        }else if (Matrix[b - 49][a - 97] != NULL && Matrix[b - 49][a - 97]->pieceType[1] != piece){
+                            break;
                         }
                     }
                 }
             }
+            
+            
+            
             break;
         case 'K':
-            
             // Calculate all King movements
             for (int theta = 0; theta < 360; theta += 45) {
                 signed int x = (sin(theta * PI / 180.0)) >= 0 ? (int)(sin(theta * PI / 180.0) + 0.5) : (int)(sin(theta * PI / 180.0) - 0.5);
                 signed int y = (cos(theta * PI / 180.0)) >= 0 ? (int)(cos(theta * PI / 180.0) + 0.5) : (int)(cos(theta * PI / 180.0) - 0.5);
-                int a = plys[ply][1] + x;
-                int b = plys[ply][2] + y;
+                int a = plies[ply][1] + x;
+                int b = plies[ply][2] + y;
                 if (a >= 'a' && a <= 'h' && b >= '1' && b <= '8') {
                     if (Matrix[b - 49][a - 97] != NULL &&
                         Matrix[b - 49][a - 97]->pieceType[0] == color &&
@@ -269,14 +329,22 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             }
             break;
         case 'Q':
-            
+            if (plies[ply].size() > 3) {
+                column = plies[ply][2];
+                row = plies[ply][3];
+                double_pos = true;
+            } else
+            {
+                column = plies[ply][1];
+                row = plies[ply][2];
+            }
             // Calculate all Queen movements
-            for (int R = 1; R < 8 && !first_found; R++) {
-                for (int theta = 0; theta < 360; theta += 45) {
+            for (int theta = 0; theta < 360 && !first_found; theta += 45) {
+                for (int R = 1; R < 8; R++) {
                     signed int x = (sin(theta * PI / 180.0)) >= 0 ? (int)(sin(theta * PI / 180.0) + 0.5) : (int)(sin(theta * PI / 180.0) - 0.5);
                     signed int y = (cos(theta * PI / 180.0)) >= 0 ? (int)(cos(theta * PI / 180.0) + 0.5) : (int)(cos(theta * PI / 180.0) - 0.5);
-                    int a = plys[ply][1] + R * x;
-                    int b = plys[ply][2] + R * y;
+                    int a = column + R * x;
+                    int b = row + R * y;
                     if (a >= 'a' && a <= 'h' && b >= '1' && b <= '8') {
                         if (Matrix[b - 49][a - 97] != NULL &&
                             Matrix[b - 49][a - 97]->pieceType[0] == color &&
@@ -286,20 +354,30 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
                             initPosColumn = a;
                             initPosRow = b;
                             first_found = true;
+                        }else if (Matrix[b - 49][a - 97] != NULL){
+                            break;
                         }
                     }
                 }
             }
             break;
         case 'B':
-            
+            if (plies[ply].size() > 3) {
+                column = plies[ply][2];
+                row = plies[ply][3];
+                double_pos = true;
+            } else
+            {
+                column = plies[ply][1];
+                row = plies[ply][2];
+            }
             // Calculate all Bishop movements
-            for (int R = 1; R < 8 && !first_found; R++) { // R = 1.414
-                for (int theta = 45; theta < 360; theta += 90) {
+            for (int theta = 45; theta < 360 && !first_found; theta += 90) {
+                for (int R = 1; R < 8; R++) { // R = 1.414
                     signed int x = (sin(theta * PI / 180.0)) >= 0 ? (int)(sin(theta * PI / 180.0) + 0.5) : (int)(sin(theta * PI / 180.0) - 0.5);
                     signed int y = (cos(theta * PI / 180.0)) >= 0 ? (int)(cos(theta * PI / 180.0) + 0.5) : (int)(cos(theta * PI / 180.0) - 0.5);
-                    int a = plys[ply][1] + R * x;
-                    int b = plys[ply][2] + R * y;
+                    int a = column + R * x;
+                    int b = row + R * y;
                     if (a >= 'a' && a <= 'h' && b >= '1' && b <= '8') {
                         if (Matrix[b - 49][a - 97] != NULL &&
                             Matrix[b - 49][a - 97]->pieceType[0] == color &&
@@ -309,6 +387,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
                             initPosColumn = a;
                             initPosRow = b;
                             first_found = true;
+                        }else if (Matrix[b - 49][a - 97] != NULL){
+                            break;
                         }
                     }
                 }
@@ -317,17 +397,18 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
         case 'N':
         {
             std::vector<int> a, b;
-            if (plys[ply].size() > 3) {
-                a = {plys[ply][1], plys[ply][1], plys[ply][1], plys[ply][1],
-                    plys[ply][1], plys[ply][1], plys[ply][1], plys[ply][1]};
-                b = {plys[ply][3] +2, plys[ply][3] -2, plys[ply][3] +1, plys[ply][3] -1,
-                    plys[ply][3] +2, plys[ply][3] -2, plys[ply][3] +1, plys[ply][3] -1};
+            if (plies[ply].size() > 3) {
+                a = {plies[ply][1], plies[ply][1], plies[ply][1], plies[ply][1],
+                    plies[ply][1], plies[ply][1], plies[ply][1], plies[ply][1]};
+                b = {plies[ply][3] +2, plies[ply][3] -2, plies[ply][3] +1, plies[ply][3] -1,
+                    plies[ply][3] +2, plies[ply][3] -2, plies[ply][3] +1, plies[ply][3] -1};
+                double_pos = true;
             } else
             {
-                a = {plys[ply][1] +1, plys[ply][1] +1, plys[ply][1] +2, plys[ply][1] +2,
-                    plys[ply][1] -1, plys[ply][1] -1, plys[ply][1] -2, plys[ply][1] -2};
-                b = {plys[ply][2] +2, plys[ply][2] -2, plys[ply][2] +1, plys[ply][2] -1,
-                    plys[ply][2] +2, plys[ply][2] -2, plys[ply][2] +1, plys[ply][2] -1};
+                a = {plies[ply][1] +1, plies[ply][1] +1, plies[ply][1] +2, plies[ply][1] +2,
+                    plies[ply][1] -1, plies[ply][1] -1, plies[ply][1] -2, plies[ply][1] -2};
+                b = {plies[ply][2] +2, plies[ply][2] -2, plies[ply][2] +1, plies[ply][2] -1,
+                    plies[ply][2] +2, plies[ply][2] -2, plies[ply][2] +1, plies[ply][2] -1};
             }
             
             
@@ -350,27 +431,63 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
             break;
         case 'O':
             
-            if (color == 'W') {
-                
+            moves.doubleMove = true;
+            if (plies[ply].size() == 3) {
+                if (color == 'W') {
+                    initPosColumn = 'e';
+                    initPosRow = '1';
+                    strcpy(moves.finalPos, "g1");
+                    strcpy(moves.initPos2, "h1");
+                    strcpy(moves.finalPos2, "f1");
+                } else {
+                    initPosColumn = 'e';
+                    initPosRow = '8';
+                    strcpy(moves.finalPos, "g8");
+                    strcpy(moves.initPos2, "h8");
+                    strcpy(moves.finalPos2, "f8");
+                }
             } else {
-                
+                if (color == 'W') {
+                    initPosColumn = 'e';
+                    initPosRow = '1';
+                    strcpy(moves.finalPos, "c1");
+                    strcpy(moves.initPos2, "a1");
+                    strcpy(moves.finalPos2, "d1");
+                } else {
+                    initPosColumn = 'e';
+                    initPosRow = '8';
+                    strcpy(moves.finalPos, "c8");
+                    strcpy(moves.initPos2, "a8");
+                    strcpy(moves.finalPos2, "d8");
+                }
             }
-            
+                
             break;
+            
+//        case '1':
+//            printf("End of game");
+//            eog = true;
+//            break;
+//
+//        case '0':
+//            printf("End of game");
+//            eog = true;
+//            break;
+            
         default:
             std::vector <int> a, b;
             char initialColumn = ' ';
             char finalpos[3];
             bool twoPosib = false;
             
-            if (plys[ply].size() > 2) {
-                initialColumn = plys[ply][0];
-                finalpos[0] = plys[ply][1];
-                finalpos[1] = plys[ply][2];
+            if (plies[ply].size() > 2) {
+                initialColumn = plies[ply][0];
+                finalpos[0] = plies[ply][1];
+                finalpos[1] = plies[ply][2];
                 twoPosib = true;
             } else{
-                finalpos[0] = plys[ply][0];
-                finalpos[1] = plys[ply][1];
+                finalpos[0] = plies[ply][0];
+                finalpos[1] = plies[ply][1];
             }
             
             
@@ -405,13 +522,24 @@ void BoardMatrix::find_positions(std::vector<std::string> &plys, int &ply, movem
     }
     
     printf("%c%c %c%c\n", initPosColumn, initPosRow,
-           (plys[ply].size() > 2) ? plys[ply][1] : plys[ply][0], (plys[ply].size() > 2) ? plys[ply][2] : plys[ply][1]);
+           (plies[ply].size() > 2) ? plies[ply][1] : plies[ply][0], (plies[ply].size() > 2) ? plies[ply][2] : plies[ply][1]);
     
     moves.initPos[0] = initPosColumn; // save a
     moves.initPos[1] = initPosRow; // save b
-    moves.finalPos[0] = (plys[ply].size() > 2) ? plys[ply][1] : plys[ply][0];    //save turns[turn][1]
-    moves.finalPos[1] = (plys[ply].size() > 2) ? plys[ply][2] : plys[ply][1];    //save turns[turn][2]
-    moves.doubleMove = false;
+    if (!moves.doubleMove && !double_pos) {
+        moves.finalPos[0] = (plies[ply].size() > 2) ? plies[ply][1] : plies[ply][0];    //save turns[turn][1]
+        moves.finalPos[1] = (plies[ply].size() > 2) ? plies[ply][2] : plies[ply][1];    //save turns[turn][2]
+    } else if (double_pos)
+    {
+        moves.finalPos[0] = plies[ply][2];    //save turns[turn][1]
+        moves.finalPos[1] = plies[ply][3];    //save turns[turn][2]
+    }
+    
+//    if (ply >= plys.size()) {
+//        printf("End of game");
+//        eog = true;
+//    }
+    
 }
 
 
@@ -420,7 +548,9 @@ void setInitialPos(Object *WPieces, Object *BPieces)
     // Set positions for all Pawns
     // X - move forward - rows / Y - move up / Z - move to the side - columns
     for (int i = 0; i < 8; i++) {
+        if (WPieces[i].promoted) WPieces[i].load("resources/CB_Pawn.obj", "WP");
         WPieces[i].setPos(2.0f, 0.0f, 2.0f*i);
+        WPieces[i].promoted = false;
     }
     // Set inital positions for all pieces
     WPieces[8].setPos(0.0f, 0.0f, 0.0f);
@@ -434,7 +564,9 @@ void setInitialPos(Object *WPieces, Object *BPieces)
     
     // Set positions for all Pawns
     for (int i = 0; i < 8; i++) {
+        if (BPieces[i].promoted) BPieces[i].load("resources/CB_Pawn.obj", "BP");
         BPieces[i].setPos(12.0f, 0.0f, 2.0f*i);
+        BPieces[i].promoted = false;
     }
     // Set positions for black pieces
     BPieces[8].setPos(14.0f, 0.0f, 0.0f);

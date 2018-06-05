@@ -36,7 +36,7 @@ private:
 public:
     //    char path[10];
     const char *pieceType;
-    bool firstMove = true;
+    bool promoted = false;
     std::vector<glm::vec3> v;
     GLuint vb;
     GLuint uvb;
@@ -45,10 +45,11 @@ public:
     const GLuint *textureID;
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
     
-    Object(){}
+//    Object(){}
     ~Object();
 
     void load(const char *path, const char *piecetype, const GLuint &Texture, const GLuint &TextureID);
+    void load(const char *path, const char *piecetype);
 
 //    void del();
 
@@ -80,6 +81,9 @@ private:
     int nBPiecesDead = 0, nWPiecesDead = 0;
 public:
     float nSteps = 8.0f;
+    bool eog = false;
+    bool promote = false;
+    char promoteTo;
 
     void init(Object WhitePieces[16], Object BlackPieces[16]);
 
@@ -87,7 +91,7 @@ public:
 
     bool move(const char pieceStart[3], const char pieceEnd[3]);
     
-    void find_positions(std::vector<std::string> &turns, int &turn, movements &moves);
+    void find_positions(std::vector<std::string> &plies, int &ply, movements &moves);
 
 };
 

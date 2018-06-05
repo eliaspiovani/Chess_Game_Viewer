@@ -12,7 +12,7 @@ bool openPGN(char *path, std::string &header, std::vector<std::string> &turns)
 {
     char headerLine[100];   // buffer to save one line
     char c = '\0';  // character of the body of the file
-    int plyCount = 0;   // counts how many turns the file contains
+//    int plyCount = 0;   // counts how many turns the file contains
     std::string buffer; // to append the characters for white and black moves
     
     // open file with the received path
@@ -49,7 +49,7 @@ bool openPGN(char *path, std::string &header, std::vector<std::string> &turns)
         if (c == ' ' || c == '\n') c = fgetc(file);
         if (c == EOF) break;
         
-        plyCount++;
+//        plyCount++;
         //        printf("%i ", plyCount);
         
         // read white move
@@ -79,11 +79,14 @@ bool openPGN(char *path, std::string &header, std::vector<std::string> &turns)
         //        printf("\n");
     }
     
-    printf("Loaded %i turns\n", plyCount*2);
+    if (turns.back()[0] == '0' || turns.back()[0] == '1') {
+        turns.pop_back();
+    }
     
-    //    for (std::vector<std::string>::iterator it = turns.begin() ; it != turns.end(); ++it) {
-    //        printf("%s ", it->c_str());
-    //    }
+    printf("Loaded %lu turns\n", turns.size());
+//    for (std::vector<std::string>::iterator it = turns.begin() ; it != turns.end(); ++it) {
+//        printf("%s ", it->c_str());
+//    }
     
     return true;
 }

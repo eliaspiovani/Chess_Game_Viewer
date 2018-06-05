@@ -278,14 +278,21 @@ int main( void )
         // when Space is pressed the software loads the next turn and set the flag movingPiece=True indicating a new movement
         // oldState enables the function only when the key is pressed, not while it is pressed
         int nextStep = glfwGetKey( window, GLFW_KEY_RIGHT );
-        if (nextStep == GLFW_PRESS && oldState == GLFW_RELEASE && turns.size() > 0 && turn <= turns.size()-1 && !movingPiece){
+        if (nextStep == GLFW_PRESS && oldState == GLFW_RELEASE && turns.size() > 0 && turn <= turns.size() && !movingPiece){
             boardMatrix.find_positions(turns, turn, moves);
             movingPiece = true;
             oldState = GLFW_PRESS;
         }
         else if (nextStep == GLFW_RELEASE && oldState == GLFW_PRESS) oldState = GLFW_RELEASE;
         
-        if (movingPiece) {
+        // if turn is bigger than the number of plies set bool of end of game
+        if (turn > turns.size() && !boardMatrix.eog) {
+            printf("End of the game");
+            boardMatrix.eog = true;
+            // enable window showing the end of game
+        }
+        
+        if (movingPiece && !boardMatrix.eog) {
             // if there is a movement (movingPiece=True) to apply this function is called
             // when the movement ends it update the variable (movingPiece=False)
             movingPiece = boardMatrix.move(moves.initPos, moves.finalPos);
@@ -400,7 +407,7 @@ int main( void )
                 
             }
             ImGui::SameLine();
-            if (ImGui::Button("   >   ") && turns.size() > 0 && turn <= turns.size()-1 && !movingPiece)
+            if (ImGui::Button("   >   ") && turns.size() > 0 && turn <= turns.size() && !movingPiece)
             {
                 boardMatrix.find_positions(turns, turn, moves);
                 movingPiece = true;
