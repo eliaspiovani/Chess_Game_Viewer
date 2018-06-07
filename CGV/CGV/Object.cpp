@@ -309,6 +309,9 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
     moves.doubleMove = false;
     char initPosColumn = '0';
     char initPosRow = '0';
+    char finalPosColumn = '0';
+    char finalPosRow = '0';
+    
     // 0 - white, 1 - black
     char color = (ply % 2) ? 'B' : 'W';
     // get type of piece
@@ -376,6 +379,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                             //                            printf("%s", Matrix[b - 49][a - 97]->pieceType);
                             initPosColumn = a;
                             initPosRow = b;
+                            finalPosColumn = column;
+                            finalPosRow = row;
                             first_found = true;
                             break;
                         }else if (Matrix[b - 49][a - 97] != NULL && Matrix[b - 49][a - 97]->pieceType[1] != piece){
@@ -403,6 +408,9 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                         //                            printf("%s", Matrix[b - 49][a - 97]->pieceType);
                         initPosColumn = a;
                         initPosRow = b;
+                        finalPosColumn = plies[ply][1];
+                        finalPosRow = plies[ply][2];
+
                     }
                 }
             }
@@ -433,6 +441,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                             //                            printf("%s", Matrix[b - 49][a - 97]->pieceType);
                             initPosColumn = a;
                             initPosRow = b;
+                            finalPosColumn = column;
+                            finalPosRow = row;
                             first_found = true;
                             break;
                         }else if (Matrix[b - 49][a - 97] != NULL){
@@ -468,6 +478,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                             //                            printf("%s", Matrix[b - 49][a - 97]->pieceType);
                             initPosColumn = a;
                             initPosRow = b;
+                            finalPosColumn = column;
+                            finalPosRow = row;
                             first_found = true;
                             break;
                         }else if (Matrix[b - 49][a - 97] != NULL){
@@ -480,7 +492,7 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
         case 'N':
         {
             std::vector<int> a, b;
-            if (plies[ply].size() > 4) {
+            if (plies[ply].size() > 3) {
                 if (plies[ply][1] >= 'a' && plies[ply][1] <= 'h') {
                     a = {plies[ply][1], plies[ply][1], plies[ply][1], plies[ply][1],
                         plies[ply][1], plies[ply][1], plies[ply][1], plies[ply][1]};
@@ -494,6 +506,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                         plies[ply][2] +2, plies[ply][2] -2, plies[ply][2] +1, plies[ply][2] -1};
                     double_row = true;
                 }
+                finalPosColumn = plies[ply][2];
+                finalPosRow = plies[ply][3];
                 
             } else
             {
@@ -501,6 +515,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                     plies[ply][1] -1, plies[ply][1] -1, plies[ply][1] -2, plies[ply][1] -2};
                 b = {plies[ply][2] +2, plies[ply][2] -2, plies[ply][2] +1, plies[ply][2] -1,
                     plies[ply][2] +2, plies[ply][2] -2, plies[ply][2] +1, plies[ply][2] -1};
+                finalPosColumn = plies[ply][1];
+                finalPosRow = plies[ply][2];
             }
             
             
@@ -529,13 +545,17 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                 if (color == 'W') {
                     initPosColumn = 'e';
                     initPosRow = '1';
-                    strcpy(moves.finalPos, "g1");
+                    finalPosColumn = 'g';
+                    finalPosRow = '1';
+//                    strcpy(moves.finalPos, "g1");
                     strcpy(moves.initPos2, "h1");
                     strcpy(moves.finalPos2, "f1");
                 } else {
                     initPosColumn = 'e';
                     initPosRow = '8';
-                    strcpy(moves.finalPos, "g8");
+                    finalPosColumn = 'g';
+                    finalPosRow = '8';
+//                    strcpy(moves.finalPos, "g8");
                     strcpy(moves.initPos2, "h8");
                     strcpy(moves.finalPos2, "f8");
                 }
@@ -543,13 +563,17 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                 if (color == 'W') {
                     initPosColumn = 'e';
                     initPosRow = '1';
-                    strcpy(moves.finalPos, "c1");
+                    finalPosColumn = 'c';
+                    finalPosRow = '1';
+//                    strcpy(moves.finalPos, "c1");
                     strcpy(moves.initPos2, "a1");
                     strcpy(moves.finalPos2, "d1");
                 } else {
                     initPosColumn = 'e';
                     initPosRow = '8';
-                    strcpy(moves.finalPos, "c8");
+                    finalPosColumn = 'c';
+                    finalPosRow = '8';
+//                    strcpy(moves.finalPos, "c8");
                     strcpy(moves.initPos2, "a8");
                     strcpy(moves.finalPos2, "d8");
                 }
@@ -608,6 +632,8 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
                     {
                         initPosColumn = a[i];
                         initPosRow = b[i];
+                        finalPosColumn = finalpos[0];
+                        finalPosRow = finalpos[1];
                         break;
                     }
                 }
@@ -624,18 +650,22 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
     
     moves.initPos[0] = initPosColumn; // save a
     moves.initPos[1] = initPosRow; // save b
-    if (!moves.doubleMove && !double_column && !double_row && !promote) {
-        moves.finalPos[0] = (plies[ply].size() > 2) ? plies[ply][1] : plies[ply][0];    //save turns[turn][1]
-        moves.finalPos[1] = (plies[ply].size() > 2) ? plies[ply][2] : plies[ply][1];    //save turns[turn][2]
-    } else if ((double_column || double_row) && !promote)
-    {
-        moves.finalPos[0] = plies[ply][2];    //save turns[turn][1]
-        moves.finalPos[1] = plies[ply][3];    //save turns[turn][2]
-    } else if (promote)
-    {
-        moves.finalPos[0] = plies[ply][0];    //save turns[turn][1]
-        moves.finalPos[1] = plies[ply][1];    //save turns[turn][2]
-    }
+    
+    moves.finalPos[0] = finalPosColumn;
+    moves.finalPos[1] = finalPosRow;
+    
+//    if (!moves.doubleMove && !double_column && !double_row && !promote) {
+//        moves.finalPos[0] = (plies[ply].size() > 2) ? plies[ply][1] : plies[ply][0];    //save turns[turn][1]
+//        moves.finalPos[1] = (plies[ply].size() > 2) ? plies[ply][2] : plies[ply][1];    //save turns[turn][2]
+//    } else if ((double_column || double_row) && !promote)
+//    {
+//        moves.finalPos[0] = plies[ply][2];    //save turns[turn][1]
+//        moves.finalPos[1] = plies[ply][3];    //save turns[turn][2]
+//    } else if (promote)
+//    {
+//        moves.finalPos[0] = plies[ply][0];    //save turns[turn][1]
+//        moves.finalPos[1] = plies[ply][1];    //save turns[turn][2]
+//    }
     
     printf("init %c%c final %c%c\n", moves.initPos[0], moves.initPos[1], moves.finalPos[0], moves.finalPos[1]);
     
