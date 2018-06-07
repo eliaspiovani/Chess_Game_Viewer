@@ -56,6 +56,14 @@ public:
     void setPos(float x, float y, float z);
 };
 
+struct moves_history{
+    char initPos[3];
+    char finalPos[3];
+    Object *piece;
+    bool doubleMove = false;
+    bool promoted = false;
+};
+
 class ProjMatrix
 {
 public:
@@ -67,7 +75,7 @@ public:
     GLuint ViewMatrixID;
     GLuint ModelMatrixID;
     GLuint LightID;
-
+    
     void uniform(GLuint &MID, GLuint &VMID, GLuint &MMID);
 
     void setLightID(GLuint &lightID);
@@ -84,12 +92,15 @@ public:
     bool eog = false;
     bool promote = false;
     char promoteTo;
+    std::vector<moves_history> m_his;
 
     void init(Object WhitePieces[16], Object BlackPieces[16]);
 
     void print();
 
-    bool move(const char pieceStart[3], const char pieceEnd[3]);
+    bool move(const char pieceStart[3], const char pieceEnd[3], const bool doubleMove);
+    
+    bool move_back();
     
     void find_positions(std::vector<std::string> &plies, int &ply, movements &moves);
 

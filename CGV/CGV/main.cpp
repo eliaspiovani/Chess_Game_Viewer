@@ -232,8 +232,8 @@ int main( void )
     static bool menuOpen = false, menuDebug = false;
     static bool mouseControl = false;
     static int mouseButton = GLFW_MOUSE_BUTTON_MIDDLE;
-    static int oldState = GLFW_RELEASE;//, oldStateC = GLFW_RELEASE;
-    bool movingPiece = false;
+    static int oldState_right = GLFW_RELEASE, oldState_left = GLFW_RELEASE;
+    bool movingPiece = false, movingPieceBack = false;
     
     // String of all the headers contained in the file
     std::string header = "PGN not Loaded";
@@ -279,18 +279,25 @@ int main( void )
             drawOBJ(BPieces[i], PM);
         }
         
-        // when Space is pressed the software loads the next turn and set the flag movingPiece=True indicating a new movement
+        // when right arrow is pressed the software loads the next turn and set the flag movingPiece=True indicating a new movement
         // oldState enables the function only when the key is pressed, not while it is pressed
         int nextStep = glfwGetKey( window, GLFW_KEY_RIGHT );
-        if (nextStep == GLFW_PRESS && oldState == GLFW_RELEASE && turns.size() > 0 && turn <= turns.size() && !movingPiece){
+        if (nextStep == GLFW_PRESS && oldState_right == GLFW_RELEASE && turns.size() > 0 && turn < turns.size() && !movingPiece && !movingPieceBack){
             boardMatrix.find_positions(turns, turn, moves);
             movingPiece = true;
-            oldState = GLFW_PRESS;
+            oldState_right = GLFW_PRESS;
         }
-        else if (nextStep == GLFW_RELEASE && oldState == GLFW_PRESS) oldState = GLFW_RELEASE;
+        else if (nextStep == GLFW_RELEASE && oldState_right == GLFW_PRESS) oldState_right = GLFW_RELEASE;
+        
+        int previousStep = glfwGetKey( window, GLFW_KEY_LEFT );
+        if (previousStep == GLFW_PRESS && oldState_left == GLFW_RELEASE && !movingPieceBack && !movingPiece && turn > 0){
+            movingPieceBack = true;
+            oldState_left = GLFW_PRESS;
+        }
+        else if (previousStep == GLFW_RELEASE && oldState_left == GLFW_PRESS) oldState_left = GLFW_RELEASE;
         
         // if turn is bigger than the number of plies set bool of end of game
-        if (turn > turns.size() && !boardMatrix.eog) {
+        if (turn >= turns.size() && !boardMatrix.eog && turns.size() > 0) {
             printf("End of the game");
             boardMatrix.eog = true;
             // enable window showing the end of game
@@ -299,12 +306,24 @@ int main( void )
         if (movingPiece && !boardMatrix.eog) {
             // if there is a movement (movingPiece=True) to apply this function is called
             // when the movement ends it update the variable (movingPiece=False)
-            movingPiece = boardMatrix.move(moves.initPos, moves.finalPos);
-            if (moves.doubleMove) boardMatrix.move(moves.initPos2, moves.finalPos2);
+            movingPiece = boardMatrix.move(moves.initPos, moves.finalPos, moves.doubleMove);
+            if (moves.doubleMove) boardMatrix.move(moves.initPos2, moves.finalPos2, moves.doubleMove);
             if (!movingPiece)
             {
-                boardMatrix.print();
+//                boardMatrix.print();
                 turn++;
+                printf("%d\n", turn);
+            }
+        }
+        
+        if (movingPieceBack) {
+            movingPieceBack = boardMatrix.move_back();
+            if (!movingPieceBack)
+            {
+//                boardMatrix.print();
+                if (boardMatrix.eog) boardMatrix.eog = false;
+                turn--;
+                printf("%d\n", turn);
             }
         }
         
@@ -406,12 +425,12 @@ int main( void )
                 boardMatrix.init(WPieces, BPieces);
             }
             ImGui::SameLine();
-            if (ImGui::Button("   <   "))
+            if (ImGui::Button("   <   ") && !movingPieceBack && !movingPiece && turn > 0)
             {
-                
+                movingPieceBack = true;
             }
             ImGui::SameLine();
-            if (ImGui::Button("   >   ") && turns.size() > 0 && turn <= turns.size() && !movingPiece)
+            if (ImGui::Button("   >   ") && turns.size() > 0 && turn <= turns.size() && !movingPiece && !movingPieceBack)
             {
                 boardMatrix.find_positions(turns, turn, moves);
                 movingPiece = true;

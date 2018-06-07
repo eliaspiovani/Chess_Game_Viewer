@@ -10,12 +10,44 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CGV/Object.cpp"
-            timestampString = "549919766.581069"
+            timestampString = "550087079.681972"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "435"
-            endingLineNumber = "435"
+            startingLineNumber = "528"
+            endingLineNumber = "528"
             landmarkName = "BoardMatrix::find_positions(std::vector&lt;std::string&gt; &amp;plies, int &amp;ply, movements &amp;moves)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CGV/Object.cpp"
+            timestampString = "550087079.68218"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "570"
+            endingLineNumber = "570"
+            landmarkName = "BoardMatrix::find_positions(std::vector&lt;std::string&gt; &amp;plies, int &amp;ply, movements &amp;moves)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CGV/Object.cpp"
+            timestampString = "550087079.682314"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
+            landmarkName = "BoardMatrix::move_back()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
