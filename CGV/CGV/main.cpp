@@ -142,7 +142,7 @@ int main( void )
     
     // Set the mouse at the center of the screen
     glfwPollEvents();
-    glfwSetCursorPos(window, 1024/2, 768/2);
+    glfwSetCursorPos(window, width/2, height/2);
     
     // Dark blue background
     glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
@@ -224,7 +224,7 @@ int main( void )
     glUseProgram(programID);
     GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
     GLfloat LigthIntensity = glGetUniformLocation(programID, "LightIntensity");
-    glUniform1f(LigthIntensity, 70.0f);
+    glUniform1f(LigthIntensity, 80.0f);
     
     //    glm::vec3 lightPos = glm::vec3(7,15,7);
     //    glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
@@ -310,10 +310,19 @@ int main( void )
             oldState = GLFW_PRESS;
         }
         
+        int leftCTRL = glfwGetKey( window, GLFW_KEY_LEFT_CONTROL);
+        int key_O = glfwGetKey( window, GLFW_KEY_O);
+        if (leftCTRL == GLFW_PRESS && key_O == GLFW_PRESS && oldState == GLFW_RELEASE){
+            menuOpen = true;
+            oldState = GLFW_PRESS;
+        }
+        
         if (nextStep == GLFW_RELEASE &&
             previousStep == GLFW_RELEASE &&
             speedUp == GLFW_RELEASE &&
             speedDown == GLFW_RELEASE &&
+            leftCTRL == GLFW_RELEASE &&
+            key_O == GLFW_RELEASE &&
             oldState == GLFW_PRESS) oldState = GLFW_RELEASE;
 
         
@@ -405,7 +414,7 @@ int main( void )
                     }
                     if (ImGui::BeginMenu("Lighting"))
                     {
-                        static float f = 70.0f;
+                        static float f = 80.0f;
                         
                         //                        if (ImGui::MenuItem("Color", NULL, false)){
                         //
