@@ -19,6 +19,8 @@ using namespace glm;
 // Include GLEW
 #include <GL/glew.h>
 
+#include "vboindexer.hpp"
+
 struct movements{
     char initPos[3];
     char finalPos[3];
@@ -44,6 +46,12 @@ public:
     const GLuint *texture;
     const GLuint *textureID;
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    std::vector<unsigned short> indices;
+    std::vector<glm::vec3> indexed_vertices;
+    std::vector<glm::vec2> indexed_uvs;
+    std::vector<glm::vec3> indexed_normals;
+    GLuint eb;
+    
     
 //    Object(){}
     ~Object();
@@ -75,9 +83,15 @@ public:
     GLuint ViewMatrixID;
     GLuint ModelMatrixID;
     GLuint LightID;
+    GLuint DepthBiasID;
+    GLuint ShadowMapID;
     
-    void uniform(GLuint &MID, GLuint &VMID, GLuint &MMID);
-
+    glm::mat4 depthMVP;
+    
+    void uniform(GLuint &MID, GLuint &VMID, GLuint &MMID, GLuint &DBID, GLuint &SMID);
+    
+    void uniformDepth(GLuint &depthMatrixID);
+    
     void setLightID(GLuint &lightID);
 };
 

@@ -16,6 +16,7 @@
 		2D4D41AE208D1F59000A36B0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4D41AD208D1F59000A36B0 /* OpenGL.framework */; };
 		2D4D41B6208D224A000A36B0 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4D41B5208D224A000A36B0 /* libGLEW.2.1.0.dylib */; };
 		2D4D41B8208D2258000A36B0 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4D41B7208D2258000A36B0 /* libglfw.3.2.dylib */; };
+		2D680A0F20C9CC6300FDC19F /* vboindexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D680A0E20C9CC6300FDC19F /* vboindexer.cpp */; };
 		2D6BFF1220AC293300C62E38 /* imgui_impl_glfw_gl3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D6BFF1020AC293300C62E38 /* imgui_impl_glfw_gl3.cpp */; };
 		2D8A307920C5338700A23E00 /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A307820C5338700A23E00 /* imgui.cpp */; };
 		2D8A307B20C5338E00A23E00 /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A307A20C5338E00A23E00 /* imgui_draw.cpp */; };
@@ -61,8 +62,18 @@
 		2D4D41D1208D252F000A36B0 /* LW.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = LW.bmp; sourceTree = "<group>"; };
 		2D4D41D2208D252F000A36B0 /* CB_King.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CB_King.obj; sourceTree = "<group>"; };
 		2D4D41D5208DE789000A36B0 /* CB_KnightB.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CB_KnightB.obj; sourceTree = "<group>"; };
+		2D680A0D20C9CC6300FDC19F /* vboindexer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vboindexer.hpp; sourceTree = "<group>"; };
+		2D680A0E20C9CC6300FDC19F /* vboindexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vboindexer.cpp; sourceTree = "<group>"; };
 		2D6BFF1020AC293300C62E38 /* imgui_impl_glfw_gl3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imgui_impl_glfw_gl3.cpp; sourceTree = "<group>"; };
 		2D6BFF1120AC293300C62E38 /* imgui_impl_glfw_gl3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imgui_impl_glfw_gl3.h; sourceTree = "<group>"; };
+		2D7BD46B20CA972E00BC34E9 /* ShadowMapping_SimpleVersion.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping_SimpleVersion.vertexshader; sourceTree = "<group>"; };
+		2D7BD46C20CA972E00BC34E9 /* DepthRTT.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthRTT.vertexshader; sourceTree = "<group>"; };
+		2D7BD46D20CA972E00BC34E9 /* ShadowMapping.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping.vertexshader; sourceTree = "<group>"; };
+		2D7BD46E20CA972E00BC34E9 /* Passthrough.vertexshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Passthrough.vertexshader; sourceTree = "<group>"; };
+		2D7BD46F20CA972E00BC34E9 /* SimpleTexture.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleTexture.fragmentshader; sourceTree = "<group>"; };
+		2D7BD47020CA972E00BC34E9 /* ShadowMapping_SimpleVersion.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping_SimpleVersion.fragmentshader; sourceTree = "<group>"; };
+		2D7BD47120CA972E00BC34E9 /* DepthRTT.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DepthRTT.fragmentshader; sourceTree = "<group>"; };
+		2D7BD47220CA972E00BC34E9 /* ShadowMapping.fragmentshader */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShadowMapping.fragmentshader; sourceTree = "<group>"; };
 		2D8A307820C5338700A23E00 /* imgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui.cpp; path = include/imgui/imgui.cpp; sourceTree = SOURCE_ROOT; };
 		2D8A307A20C5338E00A23E00 /* imgui_draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui_draw.cpp; path = include/imgui/imgui_draw.cpp; sourceTree = SOURCE_ROOT; };
 		2D97DD9C20B59A41009A0E65 /* read_pgn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = read_pgn.cpp; sourceTree = "<group>"; };
@@ -111,6 +122,8 @@
 		2D4D418D208D1B98000A36B0 /* CGV */ = {
 			isa = PBXGroup;
 			children = (
+				2D680A0E20C9CC6300FDC19F /* vboindexer.cpp */,
+				2D680A0D20C9CC6300FDC19F /* vboindexer.hpp */,
 				2D8A307A20C5338E00A23E00 /* imgui_draw.cpp */,
 				2D8A307820C5338700A23E00 /* imgui.cpp */,
 				2D6BFF1020AC293300C62E38 /* imgui_impl_glfw_gl3.cpp */,
@@ -145,6 +158,14 @@
 		2D4D41BB208D2475000A36B0 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
+				2D7BD47120CA972E00BC34E9 /* DepthRTT.fragmentshader */,
+				2D7BD46C20CA972E00BC34E9 /* DepthRTT.vertexshader */,
+				2D7BD46E20CA972E00BC34E9 /* Passthrough.vertexshader */,
+				2D7BD47020CA972E00BC34E9 /* ShadowMapping_SimpleVersion.fragmentshader */,
+				2D7BD46B20CA972E00BC34E9 /* ShadowMapping_SimpleVersion.vertexshader */,
+				2D7BD47220CA972E00BC34E9 /* ShadowMapping.fragmentshader */,
+				2D7BD46D20CA972E00BC34E9 /* ShadowMapping.vertexshader */,
+				2D7BD46F20CA972E00BC34E9 /* SimpleTexture.fragmentshader */,
 				2D97DDAB20B72A51009A0E65 /* TextureFragmentShader.fragmentshader */,
 				2D97DDAA20B72A51009A0E65 /* TransformVertexShader.vertexshader */,
 			);
@@ -237,6 +258,7 @@
 			files = (
 				2D6BFF1220AC293300C62E38 /* imgui_impl_glfw_gl3.cpp in Sources */,
 				2D4D4196208D1C24000A36B0 /* main.cpp in Sources */,
+				2D680A0F20C9CC6300FDC19F /* vboindexer.cpp in Sources */,
 				2D4D419C208D1CBA000A36B0 /* objloader.cpp in Sources */,
 				2D8A307B20C5338E00A23E00 /* imgui_draw.cpp in Sources */,
 				2D4D41A7208D1EBD000A36B0 /* Object.cpp in Sources */,

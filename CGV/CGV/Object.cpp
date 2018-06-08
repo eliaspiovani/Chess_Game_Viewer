@@ -33,6 +33,9 @@ void Object::load(const char *path, const char *piecetype, const GLuint &Texture
 
     // implement if obj was loaded well
     bool wParts = loadOBJ(path, v, uvs, n);
+    
+    indexVBO(v, uvs, n, indices, indexed_vertices, indexed_uvs, indexed_normals);
+    
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), &v[0], GL_STATIC_DRAW);
@@ -44,6 +47,10 @@ void Object::load(const char *path, const char *piecetype, const GLuint &Texture
     glGenBuffers(1, &nb);
     glBindBuffer(GL_ARRAY_BUFFER, nb);
     glBufferData(GL_ARRAY_BUFFER, n.size() * sizeof(glm::vec3), &n[0], GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &eb);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
     
     texture = &Texture;
     textureID = &TextureID;
@@ -66,14 +73,18 @@ void Object::load(const char *path, const char *piecetype)
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(glm::vec3), &v[0], GL_STATIC_DRAW);
-
+    
     glGenBuffers(1, &uvb);
     glBindBuffer(GL_ARRAY_BUFFER, uvb);
     glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-
+    
     glGenBuffers(1, &nb);
     glBindBuffer(GL_ARRAY_BUFFER, nb);
     glBufferData(GL_ARRAY_BUFFER, n.size() * sizeof(glm::vec3), &n[0], GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &eb);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
     
 }
 
@@ -90,7 +101,7 @@ void Object::setPos(float x, float y, float z)
     pos = glm::vec3(x, y, z);
 }
 
-void ProjMatrix::uniform(GLuint &MID, GLuint &VMID, GLuint &MMID)
+void ProjMatrix::uniform(GLuint &MID, GLuint &VMID, GLuint &MMID, GLuint &DBID, GLuint &SMID)
 {
     ProjectionMatrix = getProjectionMatrix();
     ViewMatrix = getViewMatrix();
@@ -101,9 +112,33 @@ void ProjMatrix::uniform(GLuint &MID, GLuint &VMID, GLuint &MMID)
     ViewMatrixID = VMID;
     ModelMatrixID = MMID;
     
+    DepthBiasID = DBID;
+    ShadowMapID = SMID;
+    
+    glm::mat4 biasMatrix(
+                         0.5, 0.0, 0.0, 0.0,
+                         0.0, 0.5, 0.0, 0.0,
+                         0.0, 0.0, 0.5, 0.0,
+                         0.5, 0.5, 0.5, 1.0
+                         );
+    
+    glm::mat4 depthBiasMVP = biasMatrix*depthMVP;
+    
+    
     glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
     glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+    glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
+}
+
+void ProjMatrix::uniformDepth(GLuint &depthMatrixID){
+    glm::vec3 lightInvDir = glm::vec3(0.5f,5,2);
+    glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+    glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0,0,0), glm::vec3(0,1,0));
+    glm::mat4 depthModelMatrix = glm::mat4(1.0);
+    depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+    
+    glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
 }
 
 void ProjMatrix::setLightID(GLuint &lightID)

@@ -35,12 +35,60 @@ using namespace glm;
 #include "Object.hpp"
 #include "read_pgn.hpp"
 
-void drawOBJ(Object &obj, ProjMatrix &PM)
+void renderToTexture(Object &obj, ProjMatrix &PM, GLuint & depthMatrixID)
 {
-    //    if (dynamic)
-    //    {
+    glm::vec3 lightInvDir = glm::vec3(0.5f,5,2);
+    glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+    glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0,0,0), glm::vec3(0,1,0));
+    
+    glm::mat4 depthModelMatrix = glm::mat4(1.0);
+    glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+    
+    glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+    
+    // 1rst attribute buffer : vertices
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, obj.vb);
+    glVertexAttribPointer(
+                          0,  // The attribute we want to configure
+                          3,                  // size
+                          GL_FLOAT,           // type
+                          GL_FALSE,           // normalized?
+                          0,                  // stride
+                          (void*)0            // array buffer offset
+                          );
+    
+    // Index buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.eb);
+    
+    // Draw the triangles !
+    glDrawElements(
+                   GL_TRIANGLES,      // mode
+                   obj.indices.size(),    // count
+                   GL_UNSIGNED_SHORT, // type
+                   (void*)0           // element array buffer offset
+                   );
+    
+    glDisableVertexAttribArray(0);
+}
+
+void drawOBJ(Object &obj, ProjMatrix &PM, GLuint depthTexture, GLuint ShadowMapID)
+{
+    glm::mat4 biasMatrix(
+                         0.5, 0.0, 0.0, 0.0,
+                         0.0, 0.5, 0.0, 0.0,
+                         0.0, 0.0, 0.5, 0.0,
+                         0.5, 0.5, 0.5, 1.0
+                         );
+    
+    glm::mat4 depthBiasMVP = biasMatrix*PM.depthMVP;
+    
     PM.MVP = PM.ProjectionMatrix * PM.ViewMatrix * glm::translate(glm::mat4(), obj.pos);
     glUniformMatrix4fv(PM.MatrixID, 1, GL_FALSE, &PM.MVP[0][0]);
+    glUniformMatrix4fv(PM.ModelMatrixID, 1, GL_FALSE, &PM.ModelMatrix[0][0]);
+    glUniformMatrix4fv(PM.ViewMatrixID, 1, GL_FALSE, &PM.ViewMatrix[0][0]);
+    glUniformMatrix4fv(PM.DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
+    
     
     glm::vec3 lightPos = glm::vec3(7 - obj.pos.x,12 - obj.pos.y,7 - obj.pos.z);
     glUniform3f(PM.LightID, lightPos.x, lightPos.y, lightPos.z);
@@ -50,6 +98,10 @@ void drawOBJ(Object &obj, ProjMatrix &PM)
     glBindTexture(GL_TEXTURE_2D, *obj.texture);
     // Set our "myTextureSampler" sampler to use Texture Unit 0
     glUniform1i(*obj.textureID, 0);
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthTexture);
+    glUniform1i(ShadowMapID, 1);
     
     // 1rst attribute buffer : vertices
     glEnableVertexAttribArray(0);
@@ -87,9 +139,16 @@ void drawOBJ(Object &obj, ProjMatrix &PM)
                           (void*)0                          // array buffer offset
                           );
     
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj.eb);
+    
     // Draw the triangle !
-    glDrawArrays(GL_TRIANGLES, 0, GLsizei(obj.v.size()) );
-    //glDrawElements(GL_VERTEX_ARRAY, vertices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(
+                   GL_TRIANGLES,      // mode
+                   obj.indices.size(),    // count
+                   GL_UNSIGNED_SHORT, // type
+                   (void*)0           // element array buffer offset
+                   );
+//    glDrawElements(GL_VERTEX_ARRAY, obj.v.size(), GL_UNSIGNED_INT, 0);
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
@@ -160,16 +219,17 @@ int main( void )
     glBindVertexArray(VertexArrayID);
     
     // Create and compile our GLSL program from the shaders
-    GLuint programID = LoadShaders( "shaders/TransformVertexShader.vertexshader", "shaders/TextureFragmentShader.fragmentshader" );
+    GLuint depthProgramID = LoadShaders( "shaders/DepthRTT.vertexshader", "shaders/DepthRTT.fragmentshader" );
     
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-    GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
-    GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
+    GLuint depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
     
     // Load the texture
     GLuint Texture_Black = loadBMP_custom("resources/DW.bmp");
     GLuint Texture_White = loadBMP_custom("resources/LW.bmp");
+    
+    // Create and compile our GLSL program from the shaders
+    GLuint programID = LoadShaders( "shaders/ShadowMapping.vertexshader", "shaders/ShadowMapping.fragmentshader" );
     
     // Get a handle for our "myTextureSampler" uniform
     GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
@@ -214,20 +274,79 @@ int main( void )
     boardMatrix.init(WPieces, BPieces);
     boardMatrix.print();
     
+    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+    GLuint FramebufferName = 0;
+    glGenFramebuffers(1, &FramebufferName);
+    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    
+    // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
+    GLuint depthTexture;
+    glGenTextures(1, &depthTexture);
+    glBindTexture(GL_TEXTURE_2D, depthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+    
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+    
+    // No color output in the bound framebuffer, only depth.
+    glDrawBuffer(GL_NONE);
+    
+    // Always check that our framebuffer is ok
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        return false;
+    
+    
+    // The quad's FBO. Used only for visualizing the shadowmap.
+    static const GLfloat g_quad_vertex_buffer_data[] = {
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        1.0f,  1.0f, 0.0f,
+    };
+    
+//    GLuint quad_vertexbuffer;
+//    glGenBuffers(1, &quad_vertexbuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+    
+    // Create and compile our GLSL program from the shaders
+//    GLuint quad_programID = LoadShaders( "shaders/Passthrough.vertexshader", "shaders/SimpleTexture.fragmentshader" );
+//    GLuint texID = glGetUniformLocation(quad_programID, "texture");
+    
+    
+    
+    
+    // Get a handle for our "MVP" uniform
+    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+    GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
+    GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
+    GLuint DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
+    GLuint ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+    
+    // Get a handle for our "LightPosition" uniform
+    GLuint lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
+    
+//    // Get a handle for our "LightPosition" uniform
+//    glUseProgram(programID);
+//    GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+//    GLfloat LigthIntensity = glGetUniformLocation(programID, "LightIntensity");
+//    glUniform1f(LigthIntensity, 80.0f);
+    
+    //    glm::vec3 lightPos = glm::vec3(7,15,7);
+    //    glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+    
     // Setup ImGui binding
     ImGui::CreateContext();
     ImGui_ImplGlfwGL3_Init(window, true);
     // Setup style
     ImGui::StyleColorsLight();
-    
-    // Get a handle for our "LightPosition" uniform
-    glUseProgram(programID);
-    GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
-    GLfloat LigthIntensity = glGetUniformLocation(programID, "LightIntensity");
-    glUniform1f(LigthIntensity, 80.0f);
-    
-    //    glm::vec3 lightPos = glm::vec3(7,15,7);
-    //    glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
     
     static bool menuOpen = false, menuDebug = false;
     static bool mouseControl = false;
@@ -246,17 +365,51 @@ int main( void )
 //    turns.push_back("ss");
 //    printf("\n%c\n", turns[0][0]);
     do{
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
         // update window size
         glfwGetWindowSize(window, &width, &height);
-        glViewport(0, 0, width, height);
+        
+        // Render to our framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+        // Clear the screen
+        glViewport(0,0,width,height);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        ProjMatrix PM;
+        PM.setLightID(lightInvDirID);
+
+        
+        // Use our shader
+        glUseProgram(depthProgramID);
+        
+//        PM.uniformDepth(depthMatrixID);
+        
+        //Fixed parts - Chess Board
+        for (int i = 0; i < 2; i++) {
+            renderToTexture(Board[i], PM, depthMatrixID);
+        }
+        
+        // Draw all the pieces
+        for (int i = 0; i < 16; i++) {
+            renderToTexture(WPieces[i], PM, depthMatrixID);
+            renderToTexture(BPieces[i], PM, depthMatrixID);
+        }
+        
+        
+        // Render to the screen
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0,0,width,height); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+        
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
+        
+        // Clear the screen
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);        // Use our shader
         
         // prepare frame for ImGui
         ImGui_ImplGlfwGL3_NewFrame();
         
-        // Use our shader
         glUseProgram(programID);
         
         glm::vec3 camPos;
@@ -264,19 +417,20 @@ int main( void )
         // Compute the MVP matrix from keyboard and mouse input
         camPos = computeMatricesFromInputs(mouseButton);
         
-        ProjMatrix PM;
-        PM.setLightID(LightID);
-        PM.uniform(MatrixID, ViewMatrixID, ModelMatrixID);
-        
+        PM.uniform(MatrixID, ViewMatrixID, ModelMatrixID, DepthBiasID, ShadowMapID);
+        glm::vec3 lightInvDir = glm::vec3(0.5f,2,2);
+
+        glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
+
         //Fixed parts - Chess Board
         for (int i = 0; i < 2; i++) {
-            drawOBJ(Board[i], PM);
+            drawOBJ(Board[i], PM, depthTexture, ShadowMapID);
         }
         
         // Draw all the pieces
         for (int i = 0; i < 16; i++) {
-            drawOBJ(WPieces[i], PM);
-            drawOBJ(BPieces[i], PM);
+            drawOBJ(WPieces[i], PM, depthTexture, ShadowMapID);
+            drawOBJ(BPieces[i], PM, depthTexture, ShadowMapID);
         }
         
         // when right arrow is pressed the software loads the next turn and set the flag movingPiece=True indicating a new movement
@@ -420,7 +574,7 @@ int main( void )
                         //
                         //                        }
                         if (ImGui::SliderFloat("Intensity", &f, 0.0f, 200.0f)){
-                            glUniform1f(LigthIntensity, f);
+//                            glUniform1f(LigthIntensity, f);
                         }
                         ImGui::EndMenu();
                     }
