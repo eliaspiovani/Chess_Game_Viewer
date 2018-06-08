@@ -233,7 +233,8 @@ int main( void )
     static bool mouseControl = false;
     static int mouseButton = GLFW_MOUSE_BUTTON_MIDDLE;
     static int oldState = GLFW_RELEASE;
-    bool movingPiece = false, movingPieceBack = false, moveToEnd = false;
+    bool movingPiece = false, movingPieceBack = false, moveToEnd = false, playVideo = false;
+    double startTime = 0;
     
     // String of all the headers contained in the file
     std::string header = "PGN not Loaded";
@@ -288,12 +289,14 @@ int main( void )
             oldState = GLFW_PRESS;
         }
         
+        // left arrow play previous move
         int previousStep = glfwGetKey( window, GLFW_KEY_LEFT );
         if (previousStep == GLFW_PRESS && oldState == GLFW_RELEASE && !movingPieceBack && !movingPiece && turn > 0){
             movingPieceBack = true;
             oldState = GLFW_PRESS;
         }
         
+        // key add '+' increase the speed of the movement
         int speedUp = glfwGetKey( window, GLFW_KEY_KP_ADD);
         if (speedUp == GLFW_PRESS && oldState == GLFW_RELEASE && !movingPieceBack && !movingPiece){
             boardMatrix.nSteps--;
@@ -301,6 +304,7 @@ int main( void )
             printf("SpeedUp %f", boardMatrix.nSteps);
             oldState = GLFW_PRESS;
         }
+        // '-' decrease it, both by changing the value of nSteps
         int speedDown = glfwGetKey( window, GLFW_KEY_KP_SUBTRACT);
         if (speedDown == GLFW_PRESS && oldState == GLFW_RELEASE && !movingPieceBack && !movingPiece){
             
@@ -310,6 +314,15 @@ int main( void )
             oldState = GLFW_PRESS;
         }
         
+        // when space is pressed, the application starts to play all moves automatically
+        int space = glfwGetKey( window, GLFW_KEY_SPACE);
+        if (space == GLFW_PRESS && oldState == GLFW_RELEASE && turns.size() > 0 && turn < turns.size()){
+            playVideo = !playVideo;
+            startTime = glfwGetTime();
+            oldState = GLFW_PRESS;
+        }
+        
+        // ctrl + o , open the menu open PGN
         int leftCTRL = glfwGetKey( window, GLFW_KEY_LEFT_CONTROL);
         int key_O = glfwGetKey( window, GLFW_KEY_O);
         if (leftCTRL == GLFW_PRESS && key_O == GLFW_PRESS && oldState == GLFW_RELEASE){
@@ -317,19 +330,21 @@ int main( void )
             oldState = GLFW_PRESS;
         }
         
+        // if no buttom is being pressed, reset olstate
         if (nextStep == GLFW_RELEASE &&
             previousStep == GLFW_RELEASE &&
             speedUp == GLFW_RELEASE &&
             speedDown == GLFW_RELEASE &&
             leftCTRL == GLFW_RELEASE &&
             key_O == GLFW_RELEASE &&
+            space == GLFW_RELEASE &&
             oldState == GLFW_PRESS) oldState = GLFW_RELEASE;
-
         
         // if turn is bigger than the number of plies set bool of end of game
         if (turn >= turns.size() && !boardMatrix.eog && turns.size() > 0) {
             printf("End of the game");
             boardMatrix.eog = true;
+            playVideo = false;
             // enable window showing the end of game
         }
         
@@ -369,6 +384,15 @@ int main( void )
                 printf("%d\n", turn);
             }
             moveToEnd = false;
+        }
+        
+        if (playVideo) {
+            if ((glfwGetTime() > startTime + 2.0) && turns.size() > 0 && turn < turns.size()&& !movingPiece && !movingPieceBack) {
+//                printf("time");
+                boardMatrix.find_positions(turns, turn, moves);
+                movingPiece = true;
+                startTime = glfwGetTime();
+            }
         }
         
         // creates the menu bar
@@ -459,8 +483,8 @@ int main( void )
             window_flags |= ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoNav;
             ImGui::Begin("Buttons", 0, window_flags);
-            ImGui::SetWindowPos(ImVec2 (width/2 - 264/2, height - 680/15));
-            ImGui::SetWindowSize(ImVec2 (264, 35));
+            ImGui::SetWindowPos(ImVec2 (width/2 - 330/2, height - 680/15));
+            ImGui::SetWindowSize(ImVec2 (330, 35));
             if (ImGui::Button("   <<  "))
             {
                 turn = 0;
@@ -480,10 +504,17 @@ int main( void )
                 movingPiece = true;
             }
             ImGui::SameLine();
-            if (ImGui::Button("   >>  ") && turn < turns.size())
+            if (ImGui::Button("   >>  ") && turns.size() > 0 && turn < turns.size())
             {
                 moveToEnd = true;
             }
+            ImGui::SameLine();
+            if (ImGui::Button("   +   ") && turns.size() > 0 && turn < turns.size())
+            {
+                playVideo = !playVideo;
+                startTime = glfwGetTime();
+            }
+            
             ImGui::End();
         }
         

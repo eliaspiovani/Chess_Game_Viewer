@@ -667,7 +667,7 @@ void BoardMatrix::find_positions(std::vector<std::string> &plies, int &ply, move
 //        moves.finalPos[1] = plies[ply][1];    //save turns[turn][2]
 //    }
     
-    printf("init %c%c final %c%c\n", moves.initPos[0], moves.initPos[1], moves.finalPos[0], moves.finalPos[1]);
+    printf("%c%c %c%c\n", moves.initPos[0], moves.initPos[1], moves.finalPos[0], moves.finalPos[1]);
     
     
 //    if (ply >= plys.size()) {
