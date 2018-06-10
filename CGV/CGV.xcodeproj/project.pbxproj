@@ -14,11 +14,11 @@
 		2D4D41A4208D1D0C000A36B0 /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D419F208D1D0C000A36B0 /* texture.cpp */; };
 		2D4D41A7208D1EBD000A36B0 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D4D41A5208D1EBD000A36B0 /* Object.cpp */; };
 		2D4D41AE208D1F59000A36B0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4D41AD208D1F59000A36B0 /* OpenGL.framework */; };
-		2D4D41B6208D224A000A36B0 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4D41B5208D224A000A36B0 /* libGLEW.2.1.0.dylib */; };
-		2D4D41B8208D2258000A36B0 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4D41B7208D2258000A36B0 /* libglfw.3.2.dylib */; };
 		2D6BFF1220AC293300C62E38 /* imgui_impl_glfw_gl3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D6BFF1020AC293300C62E38 /* imgui_impl_glfw_gl3.cpp */; };
 		2D8A307920C5338700A23E00 /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A307820C5338700A23E00 /* imgui.cpp */; };
 		2D8A307B20C5338E00A23E00 /* imgui_draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D8A307A20C5338E00A23E00 /* imgui_draw.cpp */; };
+		2D92D8A820CD52C800D2CED0 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D92D8A620CD52B300D2CED0 /* libGLEW.2.1.0.dylib */; };
+		2D92D8AA20CD52DB00D2CED0 /* libglfw.3.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D92D8A920CD52DA00D2CED0 /* libglfw.3.2.dylib */; };
 		2D97DD9E20B59A41009A0E65 /* read_pgn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2D97DD9C20B59A41009A0E65 /* read_pgn.cpp */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +65,8 @@
 		2D6BFF1120AC293300C62E38 /* imgui_impl_glfw_gl3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imgui_impl_glfw_gl3.h; sourceTree = "<group>"; };
 		2D8A307820C5338700A23E00 /* imgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui.cpp; path = include/imgui/imgui.cpp; sourceTree = SOURCE_ROOT; };
 		2D8A307A20C5338E00A23E00 /* imgui_draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imgui_draw.cpp; path = include/imgui/imgui_draw.cpp; sourceTree = SOURCE_ROOT; };
+		2D92D8A620CD52B300D2CED0 /* libGLEW.2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.1.0.dylib; path = lib/libGLEW.2.1.0.dylib; sourceTree = "<group>"; };
+		2D92D8A920CD52DA00D2CED0 /* libglfw.3.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.2.dylib; path = lib/libglfw.3.2.dylib; sourceTree = "<group>"; };
 		2D97DD9C20B59A41009A0E65 /* read_pgn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = read_pgn.cpp; sourceTree = "<group>"; };
 		2D97DD9D20B59A41009A0E65 /* read_pgn.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = read_pgn.hpp; sourceTree = "<group>"; };
 		2D97DDA720B72706009A0E65 /* shankland_liang_2018.pgn */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shankland_liang_2018.pgn; sourceTree = "<group>"; };
@@ -79,8 +81,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2D4D41B8208D2258000A36B0 /* libglfw.3.2.dylib in Frameworks */,
-				2D4D41B6208D224A000A36B0 /* libGLEW.2.1.0.dylib in Frameworks */,
+				2D92D8AA20CD52DB00D2CED0 /* libglfw.3.2.dylib in Frameworks */,
+				2D92D8A820CD52C800D2CED0 /* libGLEW.2.1.0.dylib in Frameworks */,
 				2D4D41AE208D1F59000A36B0 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -135,6 +137,8 @@
 		2D4D41A8208D1F37000A36B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2D92D8A920CD52DA00D2CED0 /* libglfw.3.2.dylib */,
+				2D92D8A620CD52B300D2CED0 /* libGLEW.2.1.0.dylib */,
 				2D4D41B7208D2258000A36B0 /* libglfw.3.2.dylib */,
 				2D4D41B5208D224A000A36B0 /* libGLEW.2.1.0.dylib */,
 				2D4D41AD208D1F59000A36B0 /* OpenGL.framework */,
@@ -366,17 +370,9 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = (
-					/Users/eliaspiovani/Documents/OneDrive/Projects/Programming/Chess_Game_Viewer/.,
-					/Users/eliaspiovani/Documents/OneDrive/Projects/Programming/Chess_Game_Viewer/CGV/.,
-					/usr/local/include,
-					/usr/local/lib,
-					/Users/eliaspiovani/Documents/OneDrive/Projects/Programming/Chess_Game_Viewer/CGV/include,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/include,
-					/usr/local/lib,
-				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
+				LD_NO_PIE = NO;
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
 				NEW_SETTING = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = build;
@@ -390,17 +386,9 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = (
-					/Users/eliaspiovani/Documents/OneDrive/Projects/Programming/Chess_Game_Viewer/.,
-					/Users/eliaspiovani/Documents/OneDrive/Projects/Programming/Chess_Game_Viewer/CGV/.,
-					/usr/local/include,
-					/usr/local/lib,
-					/Users/eliaspiovani/Documents/OneDrive/Projects/Programming/Chess_Game_Viewer/CGV/include,
-				);
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/include,
-					/usr/local/lib,
-				);
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/include";
+				LD_NO_PIE = NO;
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
 				NEW_SETTING = "";
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
