@@ -12,6 +12,7 @@ The interface is made using the [ImGui](https://github.com/ocornut/imgui) librar
 
 ## Interface
 
+<br>![interface view](https://github.com/eliaspiovani/Chess_Game_Viewer/blob/master/CGV/WIP_images/Screen%20Shot%202018-05-20%20at%2022.07.03.png)
 
 ## License
 Chess_Game_Viewer is licensed under the MIT License, see LICENSE for more information.
